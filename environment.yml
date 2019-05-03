@@ -1,0 +1,11 @@
+name: lapis2019
+channels:
+    - conda-forge
+dependencies:
+    - python=3.7
+    - numpy
+    - scipy
+    - numba
+    - matplotlib
+    - jupyter
+    - ipython
