@@ -1,6 +1,7 @@
 import time
 import numpy as np
 from numba import jit
+from scipy.io import loadmat
 import matplotlib.pyplot as plt
 
 
@@ -73,16 +74,20 @@ def _likelihood(G, porosity, times, sigma):
 def inverse_problem(G, times, sigma, supremum, iterations, expected_acceptance=0.001):
     n_accepted = 0
     accepted_porosities = np.zeros((int(iterations * expected_acceptance), 4))
+    max_likelihood = 0
     for i in range(iterations):
         # Draw a porosity array with uniform distribution between 0.2 and 0.4
         porosity = (0.4 - 0.2) * np.random.rand(4) + 0.2
         # Check if it should be rejected or accepted
-        probability = _likelihood(G, porosity, times, sigma) / supremum
+        likelihood = _likelihood(G, porosity, times, sigma)
+        if likelihood > max_likelihood:
+            max_likelihood = likelihood
+        probability = likelihood / supremum
         if np.random.rand() < probability:
             accepted_porosities[n_accepted] = porosity
             n_accepted += 1
     accepted_porosities = accepted_porosities[:n_accepted]
-    return accepted_porosities
+    return accepted_porosities, max_likelihood
 
 
 # Define model
@@ -92,19 +97,21 @@ sources = np.linspace(0.5, 5.5, 6)
 # Get G matrix
 G = GPR_forward_matrix(sources, boreholes_distance)
 
-# Synthetic model
-porosity = [0.2, 0.3, 0.4, 0.2]
-times = forward(G, porosity)
+# Read data from file
+data = loadmat("data.mat")
+times = data["dataobs5"]
 
 # Inverse problem of synthetic
 sigma = 1
-supremum = 8e-15
+supremum = 4e-21
 iterations = 35e6
 start = time.time()
-porosities = inverse_problem(G, times, sigma, supremum, iterations)
+porosities, max_likelihood = inverse_problem(G, times, sigma, supremum, iterations)
 end = time.time()
+
 print("Computation time: {}".format(end - start))
-print(porosities.size)
+print("Accepted porosity models: {}".format(porosities.size))
+print("Maximum likelihood: {}".format(max_likelihood))
 
 
 fig, axes = plt.subplots(nrows=2, ncols=2)
