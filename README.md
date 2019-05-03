@@ -18,7 +18,7 @@ You'll need a Python distribution to make it run with the following dependencies
 - matplotlib
 
 The easiest way to get Python and all of these dependencies installed is through
-[Anaconda]().
+[Anaconda](https://www.anaconda.com/).
 Download the latest Anaconda 3 distribution for your OS.
 
 Then clone the repo:
