@@ -16,9 +16,7 @@ def GPR_forward_matrix(sources, boreholes_distance):
             if i == j:
                 G[j + 6 * i, i] = boreholes_distance
             else:
-                factor = np.sqrt(
-                    1 + boreholes_distance ** 2 / height ** 2
-                ) * dh
+                factor = np.sqrt(1 + boreholes_distance ** 2 / height ** 2) * dh
                 for k in range(6):
                     kmin, kmax = min(i, j), max(i, j)
                     if k == kmin or k == kmax:
@@ -101,7 +99,7 @@ G = GPR_forward_matrix(sources, boreholes_distance)
 data = loadmat("data.mat")
 times = data["dataobs5"]
 
-# Inverse problem of synthetic
+# Inverse problem
 sigma = 1
 supremum = 4e-21
 iterations = 35e6
