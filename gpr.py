@@ -1,5 +1,7 @@
 import time
 import numpy as np
+from numba import jit
+import matplotlib.pyplot as plt
 
 
 def GPR_forward_matrix(sources, boreholes_distance):
@@ -26,6 +28,7 @@ def GPR_forward_matrix(sources, boreholes_distance):
     return G
 
 
+@jit(nopython=True)
 def forward(G, porosity):
     # Convert the four porosities into 6 layers
     porosity_six_layers = np.zeros(6)
@@ -37,11 +40,12 @@ def forward(G, porosity):
     porosity_six_layers[5] = porosity[3]
     # Convert porosity to slowness
     slowness = _porosity_to_slowness(porosity_six_layers)
-    slowness = np.matrix(slowness).T
-    times = G * slowness
+    slowness = slowness.reshape(6, 1)
+    times = np.dot(G, slowness)
     return times
 
 
+@jit(nopython=True)
 def _porosity_to_slowness(porosity, kappa_s=5, kappa_w=81):
     # Convert porosities to slownesses
     c = 0.3  # speed of light in vacumm in m/ns
@@ -53,7 +57,8 @@ def _porosity_to_slowness(porosity, kappa_s=5, kappa_w=81):
     return slowness
 
 
-def likelihood(G, porosity, times, sigma):
+@jit(nopython=True)
+def _likelihood(G, porosity, times, sigma):
     # Get number of data values
     n_times = times.size
     # Calculate the difference between predicted and data
@@ -65,21 +70,20 @@ def likelihood(G, porosity, times, sigma):
     return likelihood
 
 
-def inverse_problem(G, times, sigma, supremum, iterations):
+@jit(nopython=True)
+def inverse_problem(G, times, sigma, supremum, iterations, expected_acceptance=0.001):
     n_accepted = 0
-    accepted_porosities = np.zeros((iterations, 4))
-    likelihoods = np.zeros(iterations)
+    accepted_porosities = np.zeros((int(iterations * expected_acceptance), 4))
     for i in range(iterations):
         # Draw a porosity array with uniform distribution between 0.2 and 0.4
         porosity = (0.4 - 0.2) * np.random.rand(4) + 0.2
         # Check if it should be rejected or accepted
-        likelihoods[i] = likelihood(G, porosity, times, sigma)
-        probability = likelihoods[i] / supremum
+        probability = _likelihood(G, porosity, times, sigma) / supremum
         if np.random.rand() < probability:
             accepted_porosities[n_accepted] = porosity
             n_accepted += 1
     accepted_porosities = accepted_porosities[:n_accepted]
-    return accepted_porosities, likelihoods
+    return accepted_porosities
 
 
 # Define model
@@ -90,15 +94,22 @@ sources = np.linspace(0.5, 5.5, 6)
 G = GPR_forward_matrix(sources, boreholes_distance)
 
 # Synthetic model
-porosity = [0.2, 0.4, 0.2, 0.2]
+porosity = [0.2, 0.3, 0.4, 0.2]
 times = forward(G, porosity)
 
 # Inverse problem of synthetic
 sigma = 1
-supremum = 1e-21
-iterations = 100000
+supremum = 8e-15
+iterations = 35e6
 start = time.time()
-porosities, likelihoods = inverse_problem(G, times, sigma, supremum, iterations)
+porosities = inverse_problem(G, times, sigma, supremum, iterations)
 end = time.time()
 print("Computation time: {}".format(end - start))
 print(porosities.size)
+
+
+fig, axes = plt.subplots(nrows=2, ncols=2)
+for i, ax in enumerate(axes.ravel()):
+    ax.hist(porosities[:, i])
+    ax.set_title("Layer {}".format(i))
+plt.show()
