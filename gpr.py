@@ -24,7 +24,6 @@ def GPR_forward_matrix(sources, boreholes_distance):
                         G[j + 6 * i, k] = 0.5 * factor
                     elif k > kmin and k < kmax:
                         G[j + 6 * i, k] = factor
-    G = np.matrix(G)
     return G
 
 
