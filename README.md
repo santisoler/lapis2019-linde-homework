@@ -5,9 +5,9 @@ Linde on the LAPIS 2019 School.
 
 It contains:
 
-- **Solution to Homework.ipynb**: Jupyter notebook with the solutions to the homework.
-- **data.mat**: Matlab data file containing measured GPR arrival times.
-- **environment.yml**: Configuration file for creating Anaconda environment.
+- `Solution to Homework.ipynb`: Jupyter notebook with the solutions to the homework.
+- `data.mat`: Matlab data file containing measured GPR arrival times.
+- `environment.yml`: Configuration file for creating Anaconda environment.
 
 ## How to run?
 
@@ -48,6 +48,6 @@ Finally, start a Jupyter Notebook kernel:
 jupyter-notebook
 ```
 This will open a new page on your web browser where you will be able to find the
-**Solutions to Homework.ipynb** notebook.
+`Solutions to Homework.ipynb` notebook.
 You'll be able to open it and run any cell.
 If you want to reproduce our results, run all cells in order.
