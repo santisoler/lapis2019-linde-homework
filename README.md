@@ -1,5 +1,7 @@
 # Solutions to Niklas Linde's Homework for LAPIS 2019
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/santisoler/lapis2019-linde-homework/master)
+
 This repo contains a Jupyter notebook that performs the tasks left as homework by Niklas
 Linde on the LAPIS 2019 School.
 
@@ -9,7 +11,22 @@ It contains:
 - `data.mat`: Matlab data file containing measured GPR arrival times.
 - `environment.yml`: Configuration file for creating Anaconda environment.
 
+The `Solution to Homework.ipynb` notebook has been written by
+[Santiago Soler](https://github.com/santisoler) and
+[Sebastian Correa-Otto](https://github.com/sacaliza)
+in order to pass the LAPIS 2019 assignments.
+
+
 ## How to run?
+
+### Use Binder
+
+The easiest way to run the notebook is through [Binder](https://mybinder.org).
+Just follow
+[this link](https://mybinder.org/v2/gh/santisoler/lapis2019-linde-homework/master)
+and wait until Binder loads the notebook.
+
+### Download the repo and run it locally
 
 You'll need a Python distribution to make it run with the following dependencies:
 - numpy
