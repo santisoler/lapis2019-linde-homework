@@ -57,7 +57,7 @@ conda env create
 
 Once all the packages have been downloaded and installed, activate the repository:
 ```
-conda activate lapis2019-linde-homework
+conda activate lapis2019
 ```
 
 Finally, start a Jupyter Notebook kernel:
